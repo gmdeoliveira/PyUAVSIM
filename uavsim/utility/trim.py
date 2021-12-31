@@ -3,13 +3,14 @@ from copy import deepcopy
 from scipy.optimize import minimize
 from .rotations import Euler2Quaternion
 
-
+# Function that calculate the states and commands values for a given air total velocity and flight path angle (gamma)
 def compute_trim(dyn, v_air, gamma):
 
     dynamics = deepcopy(dyn)
 
     e0 = Euler2Quaternion(0, gamma, 0)
 
+    #Initial states values
     _state = np.array([
         [dynamics.state.item(0)],
         [dynamics.state.item(1)],
@@ -26,6 +27,7 @@ def compute_trim(dyn, v_air, gamma):
         [0.0],
     ])
 
+    #Initial surface commands values
     _delta = np.array([
         [0.0],
         [0.0],
@@ -35,6 +37,7 @@ def compute_trim(dyn, v_air, gamma):
 
     _x = np.concatenate((_state, _delta), axis=0)
 
+    # Defining the constrains for the optimization
     cons = ({'type': 'eq',
              'fun': lambda x: np.array([
                  x[3] ** 2 + x[4] ** 2 + x[5] ** 2 - v_air ** 2,
@@ -48,6 +51,7 @@ def compute_trim(dyn, v_air, gamma):
              ])
              })
 
+    # Optimization algorithm
     res = minimize(trim_objective_fun, _x, method='SLSQP',
                    args=(dynamics, v_air, gamma),
                    constraints=cons, options={'ftol': 1e-6})
@@ -57,7 +61,7 @@ def compute_trim(dyn, v_air, gamma):
 
     return trim_state, trim_input
 
-
+# Creating the objective function for the trimming algorithm
 def trim_objective_fun(x, dynamics, v_air, gamma):
 
     state = x[0:13]
