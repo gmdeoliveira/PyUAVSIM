@@ -26,3 +26,6 @@ PyUAVSIM provides an extensible 6DOF flight dynamics simulator for fixed-wing ai
 - [ ] PyOpenGL
 - [ ] pyqtgraph
 - [ ] yaml
+
+## **My comments**
+I will post some examples of use cases for this repository, such as, trimming in climb, tuning the autopilot gains and so on.
