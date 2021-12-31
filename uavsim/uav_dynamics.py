@@ -4,7 +4,6 @@ from .parameters.uav_parameters import UAVParams
 from .utility.rotations import Quaternion2Rotation, Quaternion2Euler
 from .utility.rotations import Euler2Rotation
 
-
 class UAVDynamics:
 
     def __init__(self, uav_params, sensor_params, ts):
@@ -357,29 +356,34 @@ class UAVDynamics:
 
     def _motor_thrust_torque(self, va, delta_t):
 
-        v_in = self.uav.V_max * delta_t
+        #v_in = self.uav.V_max * delta_t
 
-        a = (self.uav.C_Q0 * self.uav.rho
-             * np.power(self.uav.D_prop, 5) / ((2. * np.pi) ** 2))
+        #a = (self.uav.C_Q0 * self.uav.rho
+        #     * np.power(self.uav.D_prop, 5) / ((2. * np.pi) ** 2))
 
-        b = ((self.uav.C_Q1 * self.uav.rho
-              * np.power(self.uav.D_prop, 4) / (2. * np.pi)) * va
-             + self.uav.KQ ** 2 / self.uav.R_motor)
+        #b = ((self.uav.C_Q1 * self.uav.rho
+        #      * np.power(self.uav.D_prop, 4) / (2. * np.pi)) * va
+        #     + self.uav.KQ ** 2 / self.uav.R_motor)
 
-        c = (self.uav.C_Q2 * self.uav.rho
-             * np.power(self.uav.D_prop, 3) * va ** 2
-             - (self.uav.KQ / self.uav.R_motor) * v_in
-             + self.uav.KQ * self.uav.i0)
+        #c = (self.uav.C_Q2 * self.uav.rho
+        #     * np.power(self.uav.D_prop, 3) * va ** 2
+        #     - (self.uav.KQ / self.uav.R_motor) * v_in
+        #     + self.uav.KQ * self.uav.i0)
 
-        omega = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
-        J = 2 * np.pi * self.v_air / (omega * self.uav.D_prop)
+        #omega = (-b + np.sqrt(b ** 2 - 4 * a * c)) / (2 * a)
+        #J = 2 * np.pi * self.v_air / (omega * self.uav.D_prop)
 
-        C_T = self.uav.C_T2 * J ** 2 + self.uav.C_T1 * J + self.uav.C_T0
-        C_Q = self.uav.C_Q2 * J ** 2 + self.uav.C_Q1 * J + self.uav.C_Q0
+        #C_T = self.uav.C_T2 * J ** 2 + self.uav.C_T1 * J + self.uav.C_T0
+        #C_Q = self.uav.C_Q2 * J ** 2 + self.uav.C_Q1 * J + self.uav.C_Q0
 
-        n = omega / (2 * np.pi)
-        thrust = self.uav.rho * n ** 2 * np.power(self.uav.D_prop, 4) * C_T
-        torque = self.uav.rho * n ** 2 * np.power(self.uav.D_prop, 5) * C_Q
+        #n = omega / (2 * np.pi)
+        #thrust = self.uav.rho * n ** 2 * np.power(self.uav.D_prop, 4) * C_T
+        #torque = self.uav.rho * n ** 2 * np.power(self.uav.D_prop, 5) * C_Q
+
+        # Using a simplified thrust and torque motor model because there is an error in the above model
+        thrust = self.uav.mass*delta_t
+        torque = 0
+        
         return thrust, torque
 
     def _update_true_state(self):
